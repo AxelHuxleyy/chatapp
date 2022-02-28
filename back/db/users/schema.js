@@ -23,10 +23,20 @@ type Query{
     getUsers: [User]
 }
 
+type Token{
+    token: String
+}
+
+input LoginInput{
+    email: String
+    password: String
+}
+
 
 type Mutation{
     # usuarios
     newUser(input: UserInput) : User
+    Login(input: LoginInput) : Token
     
 }
 `
