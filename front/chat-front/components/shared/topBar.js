@@ -2,7 +2,7 @@ import React from 'react';
 
 const TopBar = () => {
   return ( 
-    <div className='bg-blue-700 h-20 w-full p-5 text-white grid grid-cols-4 gap-3'>
+    <div className='bg-blue-800 h-20 w-full p-5 text-white grid grid-cols-4 gap-3'>
         <div className='col-span-2 pl-2 '>
         <p className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-tl from-blue-800 to-yellow-300">
             ChatApp
