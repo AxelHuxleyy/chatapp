@@ -9,3 +9,18 @@ export const NEW_USER = gql`
   }
 }
 `
+
+export const LOGIN = gql`
+mutation Login($input: LoginInput) {
+  Login(input: $input) {
+    token
+  }
+}
+`
+
+
+export const NEW_MESSAGE = gql`
+mutation NewMessage($input: MessageInput) {
+  newMessage(input: $input)
+}
+`

@@ -1,13 +1,36 @@
 import { useForm } from 'react-hook-form';
-
+import { LOGIN } from '../graphQL/user/mutations';
+import { useMutation } from '@apollo/client';
+import { useRouter } from "next/router"
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
+  const [newUser] = useMutation(LOGIN)
+  const router = useRouter()
 
 
 
   const onLogin = async (values) => {
     console.log(values)
+    try {
+      const { data } = await newUser({
+        variables: {
+          input: {
+
+            email: values.user,
+            password: values.password
+          }
+        }
+      })
+      const { Login: { token } } = data
+      if(token) {
+        localStorage.setItem("token", token)
+        router.push("/")
+      }
+
+    } catch (error) {
+      console.log(error)
+    }
 
   }
   return (
@@ -20,15 +43,15 @@ const Login = () => {
           <p className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-tl from-blue-800 to-yellow-300">
             ChatApp
           </p>
-          <form className="flex flex-col gap-7 w-full items-center" onSubmit={handleSubmit(onLogin)}> 
+          <form className="flex flex-col gap-7 w-full items-center" onSubmit={handleSubmit(onLogin)}>
             <div className="w-3/4 ">
               <p className="text-1xl font-medium"> user</p>
               <p className="text-1xl font-medium text-red-300 "> {errors?.user?.message}</p>
 
               <input
-                {...register("user", {required: "user required"})}
+                {...register("user", { required: "user required" })}
                 type="email"
-                placeholder="some@gmail.com"
+                placeholder="someOne@gmail.com"
                 className={`mt-1 text-1xl w-full border-b-2 ${errors.user ? "border-red-500 " : "border-b-gray-300"} appearance-none focus focus:border-blue-600 focus:outline-none active:outline-none active:border-blue-600`} />
             </div>
 
@@ -38,13 +61,13 @@ const Login = () => {
               <p className="text-1xl font-medium text-red-300 "> {errors?.password?.message}</p>
 
               <input
-                {...register("password", {required: "Password required"})}
+                {...register("password", { required: "Password required" })}
                 type="password"
                 placeholder="******"
                 className={`mt-1 text-1xl w-full border-b-2 ${errors.password ? "border-red-500 " : "border-b-gray-300"} appearance-none focus focus:border-blue-600 focus:outline-none active:outline-none active:border-blue-600`} />
             </div>
             <div className="flex justify-around flex-col items-center gap-3 w-full">
-              <button type='submit'  className="p-2 rounded-xl bg-yellow-300 text-lg w-2/4 ">
+              <button type='submit' className="p-2 rounded-xl bg-yellow-300 text-lg w-2/4 ">
                 Login
               </button>
               <div className='flex w-full items-center justify-center gap-3'>

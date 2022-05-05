@@ -2,6 +2,7 @@ const { gql } = require("apollo-server")
 
 
 const typeDefsUser = gql`
+#types user
 type User {
     id: ID
     name: String
@@ -9,22 +10,37 @@ type User {
     email: String
 }
 
+#queries Message
+type Message{
+    id: ID
+    message: String
+    sender: ID
+    createdAt: String
+}
 
+
+#queries Conversation
+type Conversation{
+    id: ID
+    members: [User]
+
+}
+
+#queries MessageConversation
+type MessageConversation{
+    id: ID
+    message: String
+    sender: User
+    conversation: Conversation
+    createdAt: String
+}
+
+#inputs user
 input UserInput{
     name: String
     lastName: String
     email: String
     password: String
-}
-
-type Query{
-    "A simple Sttring"
-    hello: String
-    getUsers: [User]
-}
-
-type Token{
-    token: String
 }
 
 input LoginInput{
@@ -33,11 +49,39 @@ input LoginInput{
 }
 
 
+#conversationInput
+input ConversationInput{
+    user: ID
+}
+
+#messageInput
+input MessageInput{
+    message: String
+    userId: ID
+}
+
+input getMyMessageInput{
+    idConversation: ID
+}
+
+type Token{
+    token: String
+}
+type Query{
+    "A simple Sttring"
+    hello: String
+    getUsers: [User]
+    getMyConversations: [MessageConversation]
+    getMyMessage(input: getMyMessageInput) : [Message]
+    authMe: User
+}
+
 type Mutation{
     # usuarios
     newUser(input: UserInput) : User
     Login(input: LoginInput) : Token
-    
+    newConversation(input: ConversationInput) : String
+    newMessage(input: MessageInput) : String
 }
 `
 module.exports = typeDefsUser;
