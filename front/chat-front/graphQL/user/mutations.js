@@ -21,6 +21,12 @@ mutation Login($input: LoginInput) {
 
 export const NEW_MESSAGE = gql`
 mutation NewMessage($input: MessageInput) {
-  newMessage(input: $input)
+  newMessage(input: $input) {
+    id
+    message
+    sender
+    createdAt
+    conversation
+  }
 }
 `

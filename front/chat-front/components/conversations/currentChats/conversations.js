@@ -5,7 +5,9 @@ import { GET_MY_CONVERSATION } from '../../../graphQL/user/querys';
 import { useSelector } from 'react-redux'
 
 const Conversation = () => {
-  const { loading, error, data } = useQuery(GET_MY_CONVERSATION);
+  const { loading, error, data } = useQuery(GET_MY_CONVERSATION, {
+    pollInterval: 1000,
+  });
   const me = useSelector((state) => state.me)
 
   loading ? console.log("loading") : console.log(data)
@@ -13,7 +15,14 @@ const Conversation = () => {
     <div className='w-full h-full flex flex-col overflow-y-auto border-r-2 border-r-gray-800 '>
       {loading ? <p>Loading...</p> 
       : error ? <p>Error</p> 
-      : data.getMyConversations.map(conversation => <Card key={conversation.id} conversation={conversation} message={conversation.message} owner={me.me.id == conversation.sender.id} friendChat={conversation.conversation.members[0]} />)}
+      : data.getMyConversations.map(
+        conversation => <Card 
+        key={conversation.id} 
+        conversation={conversation} 
+        message={conversation.message} 
+        owner={me.me.id == conversation.sender.id} 
+        friendChat={conversation.conversation.members[0]} 
+        createdAt={conversation.createdAt} />)}
     </div>
    );
 }

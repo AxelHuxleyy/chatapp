@@ -56,3 +56,10 @@ export const GET_MY_MESSAGE = gql`
   }
 }
 `
+
+
+export const IS_ALREADY_CONVERSATION = gql`
+  query Query($user: ID!) {
+    isAlreadyConversation(user: $user)
+  }
+`

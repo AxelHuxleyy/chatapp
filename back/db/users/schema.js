@@ -16,6 +16,7 @@ type Message{
     message: String
     sender: ID
     createdAt: String
+    conversation: ID
 }
 
 
@@ -74,6 +75,7 @@ type Query{
     getMyConversations: [MessageConversation]
     getMyMessage(input: getMyMessageInput) : [Message]
     authMe: User
+    isAlreadyConversation(user: ID!): ID
 }
 
 type Mutation{
@@ -81,7 +83,7 @@ type Mutation{
     newUser(input: UserInput) : User
     Login(input: LoginInput) : Token
     newConversation(input: ConversationInput) : String
-    newMessage(input: MessageInput) : String
+    newMessage(input: MessageInput) : Message
 }
 `
 module.exports = typeDefsUser;
