@@ -8,7 +8,6 @@ const UserResolvers = {
     Query: {
         hello: () => 'world',
         getUsers: async (_, { input }, ctx) => {
-            console.log(ctx.onlyuser._id)
             try {
                 const users = await User.find({ _id: { $ne: ctx.onlyuser._id } })
                 return users
@@ -20,12 +19,13 @@ const UserResolvers = {
         getMyConversations: async (_, { input }, ctx) => {    
             try {
 
-                const conversations = await Conversation.find({ members: ctx.onlyuser._id }).populate({ path: 'members', select: 'name lastName email' })
+                const conversations = await Conversation.find({ members: ctx.onlyuser._id }).populate({ path: 'members', select: 'name lastName email' }).sort( { createdAt: 1 } )
                 
                 const ids = conversations.map(conversation => conversation._id.toString())
 
                 const messages = await Message.find({conversation: { $in: ids }}).populate({ path: 'conversation', populate: { path: 'members',  match: { _id: {$ne: ctx.onlyuser._id} } } })
                 .populate({ path: 'sender', select: 'name lastName email' })
+                console.log(messages)
                 const cleanData = [
                     ...new Map(messages.map((item) => [item.conversation._id, item])).values(),
                 ]
@@ -36,11 +36,9 @@ const UserResolvers = {
             }
         },
         getMyMessage: async (_, { input }, ctx) => {
-            console.log("input",input)
             try {
                 if(input.idConversation !== ""){
                     const messages = await Message.find({ conversation: input.idConversation }).select({"message": 1, "createdAt":1, "sender":1}).sort({ createdAt: 1 })
-                    console.log(messages)
                     return messages
                 }
 
@@ -58,6 +56,16 @@ const UserResolvers = {
                 console.log(error)
             }
         },
+        isAlreadyConversation: async (_, { user }, ctx) => {
+            try {
+                const conversation = await Conversation.findOne({ members: { $all: [ctx.onlyuser._id, user] } })
+                if(conversation){
+                    return conversation._id
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
     },
     Mutation: {
         newUser: async (_, { input }) => {
@@ -69,10 +77,10 @@ const UserResolvers = {
             const salt = await bcryptjs.genSalt(10)
             input.password = await bcryptjs.hash(password, salt)
 
-            const newuser = new User(input)
+            const newUser = new User(input)
             try {
-                newuser.save()
-                return newuser
+                newUser.save()
+                return newUser
             } catch (error) {
                 console.log(error)
             }
@@ -97,9 +105,7 @@ const UserResolvers = {
             return { token }
         },
         newConversation: async (_, { input }, ctx) => {
-            console.log(ctx)
             const members = [input.user, ctx.onlyuser._id]
-            console.log(members)
 
             try {
                 const newConversation = new Conversation({ members })
@@ -111,24 +117,24 @@ const UserResolvers = {
         },
         newMessage: async (_, { input }, ctx) => {
             const conversation = await Conversation.find({ members: { $all: [ctx.onlyuser._id, input.userId] } })
-            console.log(conversation)
             if (conversation.length === 0) {
                 console.log("no conversation")
                 try {
                     const newConversation = new Conversation({ members: [ctx.onlyuser._id, input.userId] })
                     const conversation = await newConversation.save()
-                    console.log(conversation._id)
                     const newMessage = new Message({ message: input.message, sender: ctx.onlyuser._id, conversation: conversation._id })
-                    await newMessage.save()
-                    return "ok"
+                    const messageSaved =await newMessage.save()
+                    console.log("message saved", messageSaved)
+                    return messageSaved
                 } catch (error) {
                     console.log(error)
                 }
             }
             const newMessage = new Message({ message: input.message, sender: ctx.onlyuser._id, conversation: conversation[0]._id })
             try {
-                await newMessage.save()
-                return "ok"
+                const messageSaved = await newMessage.save()
+                console.log("message saved", messageSaved)
+                return messageSaved
             } catch (error) {
                 console.log(error)
             }

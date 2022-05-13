@@ -1,11 +1,12 @@
 import { useEffect, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
-import Message from "./mesagge"
+import Message from "../components/conversations/chat/mesagge"
 import { useQuery, useMutation } from '@apollo/client';
-import { GET_MY_MESSAGE } from '../../../graphQL/user/querys';
-import { NEW_MESSAGE } from '../../../graphQL/user/mutations';
+import { GET_MY_MESSAGE } from '../graphQL/user/querys';
+import { NEW_MESSAGE } from '../graphQL/user/mutations';
 
-const Chat = () => {
+
+const ImpleSocket = () => {
   const action = useSelector((state) => state.actions)
   const me = useSelector((state) => state.me)
   const [message, setMessage] = useState('')
@@ -73,5 +74,5 @@ const Chat = () => {
     </div>
   );
 }
-
-export default Chat;
+ 
+export default ImpleSocket;

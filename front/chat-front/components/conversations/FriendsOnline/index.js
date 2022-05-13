@@ -18,7 +18,7 @@ const Online = () => {
           <SkeletonCard /> 
         </div> :
           <div>
-            {data.getUsers.map(({ name, lastName, id }) => <CardOnline name={name} lastName={lastName} key={id} />)}
+            {data.getUsers.map(({ name, lastName, id }) => <CardOnline name={name} lastName={lastName} id={id} key={id} />)}
           </div>
       }
 
